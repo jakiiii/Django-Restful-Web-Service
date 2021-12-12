@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
 LOCAL_APPS = [
     'movies',
+    'movieplatform',
 ]
 
 THIRD_PARTY_APPS = [
