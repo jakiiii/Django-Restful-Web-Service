@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework.reverse import reverse as api_reverse
 
 from movieplatform.models import StreamPlatform, WatchList, Reviews
 
@@ -12,6 +11,7 @@ class StringSerializer(serializers.StringRelatedField):
 
 class ReviewsSerializer(serializers.ModelSerializer):
     watchlist = StringSerializer(many=False)
+    reviewer = StringSerializer(read_only=True)
 
     class Meta:
         model = Reviews
@@ -21,6 +21,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
 class WatchListSerializer(serializers.HyperlinkedModelSerializer):
     platform = StringSerializer(many=False)
     reviews = ReviewsSerializer(many=True, read_only=True)
+    user = StringSerializer(read_only=True)
 
     class Meta:
         model = WatchList

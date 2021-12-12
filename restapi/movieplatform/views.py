@@ -1,4 +1,5 @@
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 from rest_framework import status, generics, mixins
 
 from rest_framework.views import APIView
@@ -8,12 +9,17 @@ from movieplatform.models import StreamPlatform, WatchList, Reviews
 
 
 class ReviewCreate(generics.CreateAPIView):
+    queryset = Reviews.objects.all()
     serializer_class = ReviewsSerializer
 
     def perform_create(self, serializer):
         id = self.kwargs.get('id')
         watchlist = WatchList.objects.get(id=id)
-        serializer.save(watchlist=watchlist)
+        reviewer = self.request.user
+        reviewer_queryset = Reviews.objects.filter(reviewer=reviewer, watchlist=watchlist)
+        if reviewer_queryset.exists():
+            raise ValidationError("You are already reviewed this object")
+        serializer.save(reviewer=reviewer, watchlist=watchlist)
 
 
 class ReviewList(generics.ListAPIView):
@@ -96,7 +102,7 @@ class WatchListAV(APIView):
     def post(self, request):
         serializer = WatchListSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=self.request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

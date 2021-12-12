@@ -1,5 +1,9 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
+
+
+User = get_user_model()
 
 
 class StreamPlatform(models.Model):
@@ -23,6 +27,11 @@ class StreamPlatform(models.Model):
 
 
 class WatchList(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='watchlist_user'
+    )
     platform = models.ForeignKey(
         StreamPlatform,
         on_delete=models.CASCADE,
@@ -51,6 +60,11 @@ class WatchList(models.Model):
 
 
 class Reviews(models.Model):
+    reviewer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reviewer'
+    )
     watchlist = models.ForeignKey(
         WatchList,
         on_delete=models.CASCADE,

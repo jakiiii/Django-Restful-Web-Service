@@ -21,7 +21,7 @@ urlpatterns = [
     # path('review/', ReviewList.as_view(), name='review-list-api'),
     # path('review/<int:id>/', ReviewDetail.as_view(), name='review-detail-api'),
 
-    path('stream/<int:id>/review-create/', ReviewCreate.as_view(), name='stream-review-create-api'),
+    path('watch-list/<int:id>/review-create/', ReviewCreate.as_view(), name='stream-review-create-api'),
     path('stream/<int:id>/review/', ReviewList.as_view(), name='stream-review-list-api'),
     path('stream/review/<int:id>/', ReviewDetail.as_view(), name='stream-review-detail-api'),
 ]
