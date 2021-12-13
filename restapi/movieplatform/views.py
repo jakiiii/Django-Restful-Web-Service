@@ -1,14 +1,16 @@
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
-from rest_framework import status, generics, mixins
+from rest_framework import status, generics, mixins, permissions
 
 from rest_framework.views import APIView
 
+from movieplatform.permissions import AdminOrReadOnly, ReviewOwnerOrReadOnly
 from movieplatform.serializers import StreamPlatformSerializer, WatchListSerializer, ReviewsSerializer
 from movieplatform.models import StreamPlatform, WatchList, Reviews
 
 
 class ReviewCreate(generics.CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Reviews.objects.all()
     serializer_class = ReviewsSerializer
 
@@ -19,10 +21,17 @@ class ReviewCreate(generics.CreateAPIView):
         reviewer_queryset = Reviews.objects.filter(reviewer=reviewer, watchlist=watchlist)
         if reviewer_queryset.exists():
             raise ValidationError("You are already reviewed this object")
+        if watchlist.number_ratting == 0:
+            watchlist.avg_ratting = serializer.validated_data['ratting']
+        else:
+            watchlist.avg_ratting = (watchlist.avg_ratting + serializer.validated_data['ratting'])/2
+        watchlist.number_ratting = watchlist.number_ratting + 1
+        watchlist.save()
         serializer.save(reviewer=reviewer, watchlist=watchlist)
 
 
 class ReviewList(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ReviewsSerializer
 
     def get_queryset(self):
@@ -31,6 +40,7 @@ class ReviewList(generics.ListAPIView):
 
 
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [ReviewOwnerOrReadOnly]
     queryset = Reviews.objects.all()
     serializer_class = ReviewsSerializer
     lookup_field = 'id'
@@ -56,6 +66,7 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class StreamPlatformAV(APIView):
+    permission_classes = [AdminOrReadOnly]
 
     def get(self, request):
         platform = StreamPlatform.objects.all()
@@ -93,6 +104,7 @@ class StreamPlatformDetailAV(APIView):
 
 
 class WatchListAV(APIView):
+    permission_classes = [AdminOrReadOnly]
 
     def get(self, request):
         watch_list = WatchList.objects.all()
