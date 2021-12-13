@@ -82,6 +82,8 @@ class StreamPlatformAV(APIView):
 
 
 class StreamPlatformDetailAV(APIView):
+    permission_classes = [AdminOrReadOnly]
+
     def get(self, request, id):
         try:
             platform = StreamPlatform.objects.get(id=id)
@@ -121,6 +123,7 @@ class WatchListAV(APIView):
 
 
 class WatchListDetailAV(APIView):
+    permission_classes = [AdminOrReadOnly]
 
     def get(self, request, id):
         try:
