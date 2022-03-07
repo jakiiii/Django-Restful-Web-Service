@@ -46,6 +46,12 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt'
 ]
 
+LOCAL_APPS = [
+    'apps.watchlist',
+]
+
+INSTALLED_APPS += THIRD_PARTY_APPS + LOCAL_APPS
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
