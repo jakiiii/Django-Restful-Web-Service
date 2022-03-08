@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 
-from apps.watchlist.models import Movie
+from apps.watchlist.models import WatchList
 
 
 def movie_list(request):
-    movies = Movie.objects.all()
+    movies = WatchList.objects.all()
     print(movies.values())
     data = {
         'movies': list(movies.values())
@@ -14,10 +14,10 @@ def movie_list(request):
 
 
 def movie_detail(request, pk):
-    movie = Movie.objects.get(pk=pk)
+    movie = WatchList.objects.get(pk=pk)
     data = {
         'name': movie.name,
-        'description': movie.description,
+        'shortline': movie.shortline,
         'active': movie.active
     }
     return JsonResponse(data)
