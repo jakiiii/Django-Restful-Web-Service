@@ -14,6 +14,9 @@ class ReviewSerializer(serializers.ModelSerializer):  # HyperlinkedModelSerializ
             'url': {'view_name': 'review-detail-api', 'lookup_field': 'pk'},
         }
 
+    def create(self, validated_data):
+        return Review.objects.create(**validated_data)
+
 
 # class StreamPlatformListSerializer(serializers.ModelSerializer):
 #     reviews = ReviewSerializer(many=True, read_only=True)

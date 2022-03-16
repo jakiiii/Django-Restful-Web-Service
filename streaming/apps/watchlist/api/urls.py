@@ -26,5 +26,5 @@ urlpatterns = [
 
     path('stream/<int:pk>/review/create/', ReviewCreateAPI.as_view(), name='stream-review-create-api'),
     path('stream/<int:pk>/review/', ReviewListAPI.as_view(), name='stream-review-list-api'),
-    path('stream/review/<int:pk>/', StreamPlatformDetailAV.as_view(), name='stream-review-detail-api'),
+    path('stream/review/<int:pk>/', ReviewDetailAPI.as_view(), name='stream-review-detail-api'),
 ]
