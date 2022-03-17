@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+User = get_user_model()
 
 
 class StreamPlatform(models.Model):
@@ -37,7 +41,15 @@ class WatchList(models.Model):
     active = models.BooleanField(
         default=True
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    avt_ratting = models.FloatField(
+        default=0
+    )
+    number_ratting = models.IntegerField(
+        default=0
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
         return self.name
@@ -46,3 +58,42 @@ class WatchList(models.Model):
         verbose_name = "Movie"
         verbose_name_plural = "Movies"
         db_table = "movie"
+
+
+class Review(models.Model):
+    reviewer = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='reviewer'
+    )
+    ratting = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    description = models.CharField(
+        max_length=200,
+        null=True
+    )
+    watchlist = models.ForeignKey(
+        WatchList,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
+    active = models.BooleanField(
+        default=True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+        return f"{self.ratting}"
+
+    class Meta:
+        ordering = ('created_at',)
+        verbose_name = "Review"
+        verbose_name_plural = "Review"
+        db_table = "review"
