@@ -44,7 +44,8 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_jwt',
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
+    'django_filters',
 ]
 
 LOCAL_APPS = [
@@ -161,9 +162,17 @@ REST_FRAMEWORK = {
         'review-create': '2/day',
         'review-list': '10/day',
         'review-detail': '2/day'
-    }
+    },
+    # PAGINATION
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 2,
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # RENDERERS => https://www.django-rest-framework.org/api-guide/renderers/#renderers
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
+    )
 }
-
 
 # https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html#settings
 SIMPLE_JWT = {

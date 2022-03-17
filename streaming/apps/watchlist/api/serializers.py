@@ -30,8 +30,9 @@ class ReviewSerializer(serializers.ModelSerializer):  # HyperlinkedModelSerializ
 class WatchListSerializer(serializers.ModelSerializer):
     reviews = ReviewSerializer(many=True, read_only=True)
     watchlist_url = serializers.HyperlinkedIdentityField(view_name='watchlist-detail-api')
-    platform = serializers.StringRelatedField(read_only=True)
+    # platform = serializers.StringRelatedField(read_only=True)
     # platform = StreamPlatformListSerializer(read_only=True)
+    platform = serializers.CharField(source='platform.name')
 
     class Meta:
         model = WatchList

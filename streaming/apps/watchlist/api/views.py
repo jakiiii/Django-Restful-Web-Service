@@ -6,12 +6,32 @@ from rest_framework import generics, mixins, status
 from rest_framework.validators import ValidationError
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
 
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+
 from apps.watchlist.api.permissions import AdminOrReadOnly, IsReviewUserOrReadOnly
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from apps.watchlist.api.throttling import ReviewCreateThrottling, ReviewListThrottling
 from apps.watchlist.models import WatchList, StreamPlatform, Review
 from apps.watchlist.api.serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
+from apps.watchlist.api.pagination import WatchListPagination, WatchListLOPagination, WatchListCRPagination
+
+
+class UserReviewFiltering(generics.ListAPIView):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    serializer_class = ReviewSerializer
+
+    # def get_queryset(self):
+    #     username = self.kwargs['username']
+    #     return Review.objects.filter(reviewer__username=username)
+
+    def get_queryset(self):
+        queryset = Review.objects.all()
+        username = self.request.query_params.get('username', None)
+        if username is not None:
+            queryset = queryset.filter(reviewer__username=username)
+        return queryset
 
 
 class ReviewCreateAPI(generics.CreateAPIView):
@@ -39,7 +59,9 @@ class ReviewCreateAPI(generics.CreateAPIView):
 class ReviewListAPI(generics.ListAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = ReviewSerializer
-    throttle_classes = (ReviewListThrottling, AnonRateThrottle)
+    # throttle_classes = (ReviewListThrottling, AnonRateThrottle)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('reviewer__username', 'ratting', 'active')
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -72,6 +94,19 @@ class ReviewDetailAPI(generics.RetrieveUpdateDestroyAPIView):
 #
 #     def get(self, request, *args, **kwargs):
 #         return self.retrieve(request, *args, **kwargs)
+
+
+class WatchListListAPI(generics.ListAPIView):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    serializer_class = WatchListSerializer
+    queryset = WatchList.objects.all()
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend)
+    search_fields = ('^name', '=platform__name')
+    ordering_fields = ('avt_ratting', 'created_at')
+    filterset_fields = ('name', 'platform__name', 'avt_ratting', 'number_ratting', 'created_at')
+    # pagination_class = WatchListPagination
+    pagination_class = WatchListLOPagination
+    # pagination_class = WatchListCRPagination
 
 
 class WatchListListAV(APIView):
